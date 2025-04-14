@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Random assignment demo</title>
+        <script src="https://unpkg.com/jspsych@7.3.0"></script>
+        <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.1"></script>
+        <link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body></body>
+
+    <script>
+
+/******************************************************************************/
+/*** Random assignment to condition *******************************************/
+/******************************************************************************/
+
+var jsPsych = initJsPsych({});
+
+//in a real experiment please give your conditions more transparent names than this!
+var conditions = ["condition 1","condition 2","condition 3"]
+var assigned_condition = jsPsych.randomization.sampleWithoutReplacement(conditions,1)[0]
+
+var show_condition = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<p>Condition: " + assigned_condition + "</p>",
+  choices:[]
+};
+jsPsych.run([show_condition]);
+
+
+    </script>
+
+</html>

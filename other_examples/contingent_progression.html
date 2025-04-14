@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Instruction attention check from Martin & White 2021</title>
+        <script src="https://unpkg.com/jspsych@7.3.0"></script>
+        <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.1"></script>
+        <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.2"></script>
+        <link href="https://unpkg.com/jspsych@7.3.0/css/jspsych.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body></body>
+
+    <script>
+
+/*NB Prolific does not like you to use this kind of attention check, see 
+https://researcher-help.prolific.co/hc/en-gb/articles/360009223553-Using-attention-checks-as-a-measure-of-data-quality
+*/
+
+/******************************************************************************/
+/*** Contingent progression *******************************************/
+/******************************************************************************/
+
+var jsPsych = initJsPsych({});
+
+//More html-button-response trials, just like the consent screen.
+var instruction_screen_1 = {
+  type: jsPsychHtmlButtonResponse,
+  stimulus: "<h3>Attention check from Martin & White 2021</h3> \
+  <p style='text-align:left'>On the next page, you will be asked to enter your MTurk ID. \
+  Do not do this. Instead, please enter \"I understand\". This will allow us to verify \
+  that you have read and understood these instructions.</p> \
+  <p style='text-align:left'> <b>NB Prolific does not like you to use this kind of attention check, \
+    see <a href=\"https://researcher-help.prolific.co/hc/en-gb/articles/360009223553-Using-attention-checks-as-a-measure-of-data-quality\"> \
+        their documentation</a></b></p>",
+  choices:["Continue"]
+};
+
+//The attention check in the instructions. 
+var attention_check = {
+  type: jsPsychSurveyText,
+  questions:[{prompt: "Enter your MTurk ID here"}],
+};
+
+var passed_attention_check_trial = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: 'You passed the attention check and now get to do the rest of the experiment.',
+    choices:[]
+}
+
+var failed_attention_check_trial = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: 'You failed the attention check and do not get to do the rest of the experiment.',
+    choices:[]
+}
+
+var passed_attention_check_conditional = {
+    timeline: [passed_attention_check_trial],
+    conditional_function: function(){
+        var attention_check_response = jsPsych.data.get().last(1).values()[0].response.Q0;
+        if (attention_check_response=='I understand'){
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+var failed_attention_check_conditional = {
+    timeline: [failed_attention_check_trial],
+    conditional_function: function(){
+        var attention_check_response = jsPsych.data.get().last(1).values()[0].response.Q0;
+        if (attention_check_response!='I understand'){
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+jsPsych.run([instruction_screen_1,attention_check,passed_attention_check_conditional,failed_attention_check_conditional]);
+
+
+    </script>
+
+</html>
